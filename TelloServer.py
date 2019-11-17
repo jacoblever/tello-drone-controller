@@ -45,8 +45,9 @@ def read_from_drone():
             message = data.decode(encoding="utf-8")
             response_queue.put(message)
             print("Recieved: {}".format(message))
-        except Exception:
-            print ('\nError reading from socket')
+        except Exception as e:
+            print('\nError reading from socket')
+            print(e)
             break
 threading.Thread(target=read_from_drone).start()
 
