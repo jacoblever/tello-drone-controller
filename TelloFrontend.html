@@ -1,121 +1,136 @@
 <!doctype html>
 <html>
-  <head>
-    <title>Tello Frontend</title>
-    <script src="droneApi.js" type="text/javascript"></script>
-  </head>
-  <body>
-      <script type="text/javascript">
-        function sendCommand(command) {
-          setStatus("Sending...");
-          window.droneApi.sendCommand(command, function(response) {
-            setStatus(response);
-          })
-        }
 
-        function setStatus(text) {
-          statusDiv = document.getElementById("status");
-          statusDiv.innerHTML = text;
-        }
+<head>
+  <title>Tello Frontend</title>
+  <link rel="stylesheet" type="text/css" href="style.css">
+  <script src="droneApi.js" type="text/javascript"></script>
+</head>
 
-        function updateStats() {
-          window.droneApi.getStats(function(stats) {
-            statsDiv = document.getElementById("stats");
-            statsDiv.innerHTML = stats;
-            setTimeout(updateStats, 100);
-          });
-        }
+<body>
+  <script type="text/javascript">
+    function sendCommand(command) {
+      setStatus("Sending...");
+      window.droneApi.sendCommand(command, function (response) {
+        setStatus(response);
+      })
+    }
 
-        function sendTextCommand(input) {
-          if(event.keyCode == 13) { // enter key
-            sendCommand(input.value);
-            input.value = "";
-          }
-        }
+    function setStatus(text) {
+      statusDiv = document.getElementById("status");
+      statusDiv.innerHTML = text;
+    }
 
-        function handleKeyDown(e) {
-          e = e || window.event;
-          if (e.keyCode == '38') { // up arrow
-            sendCommand('forward 100')
-          }
-          else if (e.keyCode == '40') { // down arrow
-            sendCommand('back 100')
-          }
-          else if (e.keyCode == '37') { // left arrow
-            sendCommand('left 100')
-          }
-          else if (e.keyCode == '39') { // right arrow
-            sendCommand('right 100')
-          }
-        }
+    function updateStats() {
+      window.droneApi.getStats(function (stats) {
+        statsDiv = document.getElementById("stats");
+        statsDiv.innerHTML = stats;
+        setTimeout(updateStats, 100);
+      });
+    }
 
-        (function(){
-          updateStats();
-          document.onkeydown = handleKeyDown;
-        })();
-    </script>
+    function sendTextCommand(input) {
+      if (event.keyCode == 13) { // enter key
+        sendCommand(input.value);
+        input.value = "";
+      }
+    }
 
-    <button onclick="sendCommand('start')">Start</button>
-    -
-    <button onclick="sendCommand('takeoff')">Take off</button>
-    <button onclick="sendCommand('land')">Land</button>
-    -
-    <button onclick="sendCommand('emergency')">Emergency Stop</button>
-    -
-    <button onclick="sendCommand('streamon')">Record video (30 sec)</button>
-    <button onclick="sendCommand('streamoff')">Stop video</button>
-    -
-    <input onkeyup="sendTextCommand(this)"/>
-    <br/>
+    function handleKeyDown(e) {
+      e = e || window.event;
+      if (e.keyCode == '38') { // up arrow
+        sendCommand('forward 100')
+      }
+      else if (e.keyCode == '40') { // down arrow
+        sendCommand('back 100')
+      }
+      else if (e.keyCode == '37') { // left arrow
+        sendCommand('left 100')
+      }
+      else if (e.keyCode == '39') { // right arrow
+        sendCommand('right 100')
+      }
+    }
 
-    <button onclick="sendCommand('flip f')">flip f</button>
-    <button onclick="sendCommand('flip l')">flip l</button>
-    
-    <br/><br/><br/>
+    function moveDrone(direction) {
+      const drone = document.getElementById("drone")
+      drone.classList.add("horizTranslate")
+    }
 
-    <table>
-      <tr>
-        <td></td>
-        <td><button onclick="sendCommand('forward 100')">Forward</button></td>
-        <td></td>
-      </tr>
-      <tr>
-        <td><button onclick="sendCommand('left 100')">Left</button></td>
-        <td></td>
-        <td><button onclick="sendCommand('right 100')">Right</button></td>
-      </tr>
-      <tr>
-        <td></td>
-        <td><button onclick="sendCommand('back 100')">Back</button></td>
-        <td></td>
-      </tr>
-    </table>
+    (function () {
+      updateStats();
+      document.onkeydown = handleKeyDown;
+    })();
+  </script>
 
-    <br/><br/>
+  <button onclick="sendCommand('start')">Start</button>
+  -
+  <button onclick="sendCommand('takeoff')">Take off</button>
+  <button onclick="sendCommand('land')">Land</button>
+  -
+  <button onclick="sendCommand('emergency')">Emergency Stop</button>
+  -
+  <button onclick="sendCommand('streamon')">Record video (30 sec)</button>
+  <button onclick="sendCommand('streamoff')">Stop video</button>
+  -
+  <input onkeyup="sendTextCommand(this)" />
+  <br />
 
-    <table>
-      <tr>
-        <td></td>
-        <td><button onclick="sendCommand('up 100')">Up</button></td>
-        <td></td>
-      </tr>
-      <tr>
-        <td><button onclick="sendCommand('CCW 90')">CCW</button></td>
-        <td></td>
-        <td><button onclick="sendCommand('CW 90')">CW</button></td>
-      </tr>
-      <tr>
-        <td></td>
-        <td><button onclick="sendCommand('down 100')">Down</button></td>
-        <td></td>
-      </tr>
-    </table>
-    <hr/>
-    Status:<br/>
-    <div id="status">Once the Drone is connected click Start to put it into SDK mode</div>
-    <hr/>
-    Stats:<br/>
-    <div id="stats"></div>
-    <hr/>
-  </body>
+  <button onclick="sendCommand('flip f')">flip f</button>
+  <button onclick="sendCommand('flip l')">flip l</button>
+
+  <br /><br /><br />
+
+  <table>
+    <tr>
+      <td></td>
+      <td><button onclick="sendCommand('forward 100')">Forward</button></td>
+      <td></td>
+    </tr>
+    <tr>
+      <td><button onclick="sendCommand('left 100'); moveDrone('left')">Left</button></td>
+      <td></td>
+      <td><button onclick="sendCommand('right 100')">Right</button></td>
+    </tr>
+    <tr>
+      <td></td>
+      <td><button onclick="sendCommand('back 100')">Back</button></td>
+      <td></td>
+    </tr>
+  </table>
+
+  <br /><br />
+
+  <table>
+    <tr>
+      <td></td>
+      <td><button onclick="sendCommand('up 100')">Up</button></td>
+      <td></td>
+    </tr>
+    <tr>
+      <td><button onclick="sendCommand('CCW 90')">CCW</button></td>
+      <td></td>
+      <td><button onclick="sendCommand('CW 90')">CW</button></td>
+    </tr>
+    <tr>
+      <td></td>
+      <td><button onclick="sendCommand('down 100')">Down</button></td>
+      <td></td>
+    </tr>
+  </table>
+  <hr />
+  Status:<br />
+  <div id="status">Once the Drone is connected click Start to put it into SDK mode</div>
+  <hr />
+  Stats:<br />
+  <div id="stats"></div>
+  <hr />
+  <div class="drone" id="drone">
+
+    <!-- <svg width="300" height="300" stroke="black" style="border:1px solid black">
+      <circle cx="150" cy="150" r="5" stroke="black" stroke-width="2" fill="red" />
+    </svg> -->
+  </div>
+</body>
+
 </html>
