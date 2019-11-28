@@ -1,0 +1,3 @@
+- Add in left/right buttons
+- Demo
+- Talk about extensions

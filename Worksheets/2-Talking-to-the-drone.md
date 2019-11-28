@@ -1,0 +1,3 @@
+- Introduce idea of API
+- Show list of commands
+- Explain server (high-level)

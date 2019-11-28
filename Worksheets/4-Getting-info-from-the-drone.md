@@ -1,0 +1,3 @@
+- Talk about API possibilities for status
+- Pull in battery
+- Pull in tilt etc.

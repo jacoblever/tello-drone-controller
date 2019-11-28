@@ -1,0 +1,15 @@
+- What is programming
+    - Sending instructions to computer
+    - Different languages etc.
+- Concepts - 
+    - Variables
+    - Functions
+    - Loops
+- Web languages
+    - HTML
+    - CSS
+    - Javascript
+- Some examples
+    - Basic HTML web page
+    - Adding colour, size etc. using CSS
+    - Simple JS programs
