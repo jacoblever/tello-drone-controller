@@ -19,6 +19,7 @@ class Simulator {
   }
 
   initCanvases() {
+    this.simulatorContainerElement.style.position = 'relative';
     this.createCanvas('backgroundCanvas');
     this.createCanvas('rulerCanvas');
   }
@@ -28,6 +29,11 @@ class Simulator {
     canvasElement.setAttribute('id', canvasName);
     canvasElement.setAttribute('width', this.simulatorContainerElement.getAttribute('width'));
     canvasElement.setAttribute('height', this.simulatorContainerElement.getAttribute('height'));
+    canvasElement.style.position = 'absolute';
+    canvasElement.style.top = '0';
+    canvasElement.style.right = '0';
+    canvasElement.style.bottom = '0';
+    canvasElement.style.left = '0';
     this[canvasName] = this.simulatorContainerElement.appendChild(canvasElement);
     this[`${canvasName}Context`] = this[canvasName].getContext('2d');
   }
