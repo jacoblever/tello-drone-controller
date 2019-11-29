@@ -7,6 +7,10 @@ class Simulator {
 
   init() {
     this.canvasContext.fillRect(50, 25, 150, 100);
+
+    eventManager.subscribe("sendCommand", (command) => {
+      console.warn('########### sendCommand', command);
+    });
   }
 }
 
