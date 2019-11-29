@@ -1,8 +1,15 @@
-const gridSize = 20;
+const gridSize = 100;
+const droneSize = {
+  width: 98,
+  length: 93,
+  height: 41,
+};
 
 class Simulator {
   constructor(canvasId) {
     this.simulatorContainerElement = document.getElementById(canvasId);
+    this.droneX = this.simulatorContainerElement.getAttribute('width') / 2; //center
+    this.droneY = this.simulatorContainerElement.getAttribute('height') / 2; //center
 
     this.init();
   }
@@ -21,7 +28,7 @@ class Simulator {
   initCanvases() {
     this.simulatorContainerElement.style.position = 'relative';
     this.createCanvas('backgroundCanvas');
-    this.createCanvas('rulerCanvas');
+    this.createCanvas('droneCanvas');
   }
 
   createCanvas(canvasName) {
@@ -43,6 +50,7 @@ class Simulator {
     this.backgroundCanvasContext.fillRect(0, 0, this.backgroundCanvas.width, this.backgroundCanvas.height);
     this.backgroundCanvasContext.fillStyle = this.simulatorContainerElement.getAttribute('gridColor') || "#ccc";
     this.renderGrid();
+    this.renderDrone();
   }
 
   renderGrid() {
@@ -58,6 +66,15 @@ class Simulator {
 
     this.backgroundCanvasContext.strokeStyle = "#ddd";
     this.backgroundCanvasContext.stroke();
+  }
+
+  renderDrone() {
+    this.droneCanvasContext.fillStyle = "#333";
+    this.droneCanvasContext.moveTo(this.droneX, this.droneY - droneSize.length/2); //top center
+    this.droneCanvasContext.lineTo(this.droneX + droneSize.width/2, this.droneY + droneSize.length/2);
+    this.droneCanvasContext.lineTo(this.droneX, this.droneY + droneSize.length/4); //top center
+    this.droneCanvasContext.lineTo(this.droneX - droneSize.width/2, this.droneY + droneSize.length/2);
+    this.droneCanvasContext.fill();
   }
 
   simulateCommand(command, args) {
