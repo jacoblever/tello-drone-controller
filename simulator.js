@@ -1,14 +1,15 @@
 const gridSize = 20;
 
 class Simulator {
-  constructor(cavasId) {
-    this.canvas = document.getElementById(cavasId);
-    this.canvasContext = this.canvas.getContext('2d');
+  constructor(canvasId) {
+    this.simulatorContainerElement = document.getElementById(canvasId);
 
     this.init();
   }
 
   init() {
+    this.initCanvases();
+
     this.renderBackground();
 
     eventManager.subscribe("sendCommand", (commandString) => {
@@ -17,26 +18,40 @@ class Simulator {
     });
   }
 
+  initCanvases() {
+    this.createCanvas('backgroundCanvas');
+    this.createCanvas('rulerCanvas');
+  }
+
+  createCanvas(canvasName) {
+    const canvasElement = document.createElement('canvas');
+    canvasElement.setAttribute('id', canvasName);
+    canvasElement.setAttribute('width', this.simulatorContainerElement.getAttribute('width'));
+    canvasElement.setAttribute('height', this.simulatorContainerElement.getAttribute('height'));
+    this[canvasName] = this.simulatorContainerElement.appendChild(canvasElement);
+    this[`${canvasName}Context`] = this[canvasName].getContext('2d');
+  }
+
   renderBackground() {
-    this.canvasContext.fillStyle = this.canvas.getAttribute('backgroundColor') || "#f0f0f0";
-    this.canvasContext.fillRect(0, 0, this.canvas.width, this.canvas.height);
-    this.canvasContext.fillStyle = this.canvas.getAttribute('gridColor') || "#ccc";
+    this.backgroundCanvasContext.fillStyle = this.simulatorContainerElement.getAttribute('backgroundColor') || "#f0f0f0";
+    this.backgroundCanvasContext.fillRect(0, 0, this.backgroundCanvas.width, this.backgroundCanvas.height);
+    this.backgroundCanvasContext.fillStyle = this.simulatorContainerElement.getAttribute('gridColor') || "#ccc";
     this.renderGrid();
   }
 
   renderGrid() {
-    for (var x = 0; x < this.canvas.width; x += gridSize) {
-      this.canvasContext.moveTo(x, 0);
-      this.canvasContext.lineTo(x, this.canvas.height);
+    for (var x = 0; x < this.backgroundCanvas.width; x += gridSize) {
+      this.backgroundCanvasContext.moveTo(x, 0);
+      this.backgroundCanvasContext.lineTo(x, this.backgroundCanvas.height);
     }
     
-    for (var y = 0; y < this.canvas.height; y += gridSize) {
-      this.canvasContext.moveTo(0, y);
-      this.canvasContext.lineTo(this.canvas.width, y);
+    for (var y = 0; y < this.backgroundCanvas.height; y += gridSize) {
+      this.backgroundCanvasContext.moveTo(0, y);
+      this.backgroundCanvasContext.lineTo(this.backgroundCanvas.width, y);
     }
 
-    this.canvasContext.strokeStyle = "#ddd";
-    this.canvasContext.stroke();
+    this.backgroundCanvasContext.strokeStyle = "#ddd";
+    this.backgroundCanvasContext.stroke();
   }
 
   simulateCommand(command, args) {
