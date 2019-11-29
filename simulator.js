@@ -10,6 +10,7 @@ class Simulator {
     this.simulatorContainerElement = document.getElementById(canvasId);
     this.droneX = this.simulatorContainerElement.getAttribute('width') / 2; //center
     this.droneY = this.simulatorContainerElement.getAttribute('height') / 2; //center
+    this.powered = false;
 
     this.init();
   }
@@ -69,7 +70,7 @@ class Simulator {
   }
 
   renderDrone() {
-    this.droneCanvasContext.fillStyle = "#333";
+    this.droneCanvasContext.fillStyle = this.powered ? "#5AB963" : "#333";
     this.droneCanvasContext.moveTo(this.droneX, this.droneY - droneSize.length/2); //top center
     this.droneCanvasContext.lineTo(this.droneX + droneSize.width/2, this.droneY + droneSize.length/2);
     this.droneCanvasContext.lineTo(this.droneX, this.droneY + droneSize.length/4); //top center
@@ -81,6 +82,8 @@ class Simulator {
     console.warn('### simulateCommand', command, args);
     switch (command) {
       case 'start': {
+        this.powered = !this.powered;
+        this.renderDrone();
         break;
       }
       case 'takeoff': {
