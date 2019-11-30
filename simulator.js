@@ -215,6 +215,13 @@ class Simulator {
     }
   }
 
+  emergencyStop() {
+    this.droneTargetX = this.droneX;
+    this.droneTargetY = this.droneY;
+    this.droneTargetDirection = this.droneDirection;
+    this.droneTargetElevation = this.droneElevation;
+  }
+
   simulateCommand(command, args) {
     if (command === 'start') {
       this.powered = !this.powered;
@@ -240,6 +247,7 @@ class Simulator {
           break;
         }
         case 'emergency': {
+          this.emergencyStop();
           break;
         }
         case 'streamon': {
