@@ -1,11 +1,14 @@
 const gridSize = 100;
+const droneScale = 4;
 const droneSize = {
-  width: 98,
-  length: 93,
-  height: 41,
+  width: 98 / droneScale,
+  length: 93 / droneScale,
+  height: 41 / droneScale,
 };
 const droneSpeed = 10;
 const droneRotationSpeed = 10;
+const droneElevationSpeed = 10;
+const maxElevation = 1000;
 
 class Simulator {
   constructor(canvasId) {
@@ -17,6 +20,8 @@ class Simulator {
     this.rotationDirection = 'clockwise';
     this.droneDirection = 0;
     this.droneTargetDirection = this.droneDirection;
+    this.droneElevation = 0;
+    this.droneTargetElevation = this.droneElevation;
     this.powered = false;
 
     this.init();
@@ -38,6 +43,7 @@ class Simulator {
         this.moveDrone();
         this.rotateDrone();
       }
+      this.elevateDrone();
     });
   }
 
@@ -89,6 +95,7 @@ class Simulator {
     this.droneCanvasContext.save();
     this.renderDronePosition();
     this.renderDroneRotation();
+    this.renderDroneElevation();
     this.renderDroneLines();
     this.droneCanvasContext.restore();
   }
@@ -112,15 +119,22 @@ class Simulator {
     this.droneCanvasContext.rotate(directionAsRadian);
   }
 
-  updateDroneTargetPosition(direction, hypotenuse) {
-    const directions = ['forward', 'right', 'back', 'left'];
-    const directionToMove = this.droneDirection + directions.indexOf(direction) * 90;
-    const directionAsRadian = directionToMove * Math.PI/180; // Radians because JS uses radians not degrees
-    const targetAmountX = Math.sin(directionAsRadian) * hypotenuse; // SOH cah toa
-    const targetAmountY = Math.cos(directionAsRadian) * hypotenuse; // soh CAH toa
+  renderDroneElevation() {
+    const newScale = (this.droneElevation/maxElevation) * (droneScale - 1) +1; // +1 because a scale of 1 is the default, *droneScale is the max it should scale
+    this.droneCanvasContext.scale(newScale, newScale);
+  }
 
-    this.droneTargetX = Math.floor(this.droneX + targetAmountX);
-    this.droneTargetY = Math.floor(this.droneY - targetAmountY); // minus because the y is reversed in JS top to bottom
+  updateDroneTargetPosition(direction, hypotenuse) {
+    if (this.droneElevation > 0) { // don't move drone if it's on the floor
+      const directions = ['forward', 'right', 'back', 'left'];
+      const directionToMove = this.droneDirection + directions.indexOf(direction) * 90;
+      const directionAsRadian = directionToMove * Math.PI/180; // Radians because JS uses radians not degrees
+      const targetAmountX = Math.sin(directionAsRadian) * hypotenuse; // SOH cah toa
+      const targetAmountY = Math.cos(directionAsRadian) * hypotenuse; // soh CAH toa
+
+      this.droneTargetX = Math.floor(this.droneX + targetAmountX);
+      this.droneTargetY = Math.floor(this.droneY - targetAmountY); // minus because the y is reversed in JS top to bottom
+    }
   }
 
   updateDroneTargetDirection(rotationDirection, amount) {
@@ -129,6 +143,20 @@ class Simulator {
       this.droneTargetDirection = this.droneDirection + amount;
     } else if (rotationDirection === 'counterClockwise') {
       this.droneTargetDirection = this.droneDirection - amount;
+    }
+  }
+
+  updateDroneTargetElevation(elevationDirection, amount) {
+    if (elevationDirection === 'up') {
+      this.droneTargetElevation = this.droneElevation + amount;
+      if (this.droneTargetElevation > maxElevation) {
+        this.droneTargetElevation = maxElevation;
+      }
+    } else if (elevationDirection === 'down') {
+      this.droneTargetElevation = this.droneElevation - amount;
+      if (this.droneTargetElevation < 0) {
+        this.droneTargetElevation = 0;
+      }
     }
   }
 
@@ -170,9 +198,29 @@ class Simulator {
     }
   }
 
+  elevateDrone() {
+    if (this.droneElevation !== this.droneTargetElevation) {
+      const framesToElevate = Math.abs(this.droneTargetElevation - this.droneElevation) / droneElevationSpeed;
+      if (framesToElevate < 1) {
+        this.droneElevation = this.droneTargetElevation;
+      } else {
+        if (this.droneElevation < this.droneTargetElevation) { // going up
+          this.droneElevation = this.droneElevation + droneElevationSpeed;
+        } else { // going down
+          this.droneElevation = this.droneElevation - droneElevationSpeed;
+        }
+      }
+
+      this.renderDrone();
+    }
+  }
+
   simulateCommand(command, args) {
     if (command === 'start') {
       this.powered = !this.powered;
+      if (this.droneElevation > 0) {
+        this.updateDroneTargetElevation('down', maxElevation);
+      }
       this.renderDrone();
     }
 
@@ -180,9 +228,15 @@ class Simulator {
       console.warn('### simulateCommand', command, args);
       switch (command) {
         case 'takeoff': {
+          if (this.droneElevation === 0) {
+            this.updateDroneTargetElevation('up', 500);
+          }
           break;
         }
         case 'land': {
+          if (this.droneElevation > 0) {
+            this.updateDroneTargetElevation('down', maxElevation);
+          }
           break;
         }
         case 'emergency': {
@@ -211,9 +265,11 @@ class Simulator {
           break;
         }
         case 'up': {
+          this.updateDroneTargetElevation('up', parseInt(args[0]));
           break;
         }
         case 'down': {
+          this.updateDroneTargetElevation('down', parseInt(args[0]));
           break;
         }
         case 'CCW': {
