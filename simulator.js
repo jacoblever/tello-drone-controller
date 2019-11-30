@@ -23,6 +23,7 @@ class Simulator {
     this.initCanvases();
 
     this.renderBackground();
+    this.renderDrone();
 
     eventManager.subscribe("sendCommand", (commandString) => {
       const [command, ...args] = commandString.split(" ");
@@ -61,7 +62,6 @@ class Simulator {
     this.backgroundCanvasContext.fillRect(0, 0, this.backgroundCanvas.width, this.backgroundCanvas.height);
     this.backgroundCanvasContext.fillStyle = this.simulatorContainerElement.getAttribute('gridColor') || "#ccc";
     this.renderGrid();
-    this.renderDrone();
   }
 
   renderGrid() {
@@ -81,10 +81,13 @@ class Simulator {
 
   renderDrone() {
     this.droneCanvasContext.fillStyle = this.powered ? "#5AB963" : "#333";
+    this.droneCanvasContext.clearRect(0, 0, this.droneCanvas.width, this.droneCanvas.height);
+    this.droneCanvasContext.beginPath();
     this.droneCanvasContext.moveTo(this.droneX, this.droneY - droneSize.length/2); //top center
-    this.droneCanvasContext.lineTo(this.droneX + droneSize.width/2, this.droneY + droneSize.length/2);
-    this.droneCanvasContext.lineTo(this.droneX, this.droneY + droneSize.length/4); //top center
-    this.droneCanvasContext.lineTo(this.droneX - droneSize.width/2, this.droneY + droneSize.length/2);
+    this.droneCanvasContext.lineTo(this.droneX + droneSize.width/2, this.droneY + droneSize.length/2); // right bottom
+    this.droneCanvasContext.lineTo(this.droneX, this.droneY + droneSize.length/4); //bottom center
+    this.droneCanvasContext.lineTo(this.droneX - droneSize.width/2, this.droneY + droneSize.length/2); // left bottom
+    this.droneCanvasContext.closePath();
     this.droneCanvasContext.fill();
   }
 
@@ -115,6 +118,8 @@ class Simulator {
         this.droneX = this.droneX + xToTravel;
         this.droneY = this.droneY + yToTravel;
       }
+
+      this.renderDrone();
     }
   }
 
