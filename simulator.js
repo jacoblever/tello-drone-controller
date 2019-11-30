@@ -10,6 +10,9 @@ class Simulator {
     this.simulatorContainerElement = document.getElementById(canvasId);
     this.droneX = this.simulatorContainerElement.getAttribute('width') / 2; //center
     this.droneY = this.simulatorContainerElement.getAttribute('height') / 2; //center
+    this.droneDirection = 0;
+    this.droneTargetX = this.droneX;
+    this.droneTargetY = this.droneY;
     this.powered = false;
 
     this.init();
@@ -21,7 +24,7 @@ class Simulator {
     this.renderBackground();
 
     eventManager.subscribe("sendCommand", (commandString) => {
-      const [command, args] = commandString.split(" ");
+      const [command, ...args] = commandString.split(" ");
       this.simulateCommand(command, args);
     });
   }
@@ -78,6 +81,17 @@ class Simulator {
     this.droneCanvasContext.fill();
   }
 
+  updateDroneTargetPosition(direction, hypotenuse) {
+    const directions = ['forward', 'right', 'back', 'left'];
+    const directionToMove = this.droneDirection + directions.indexOf(direction) * 90;
+    const directionAsRadian = directionToMove * Math.PI/180; // Radians because JS uses radians not degrees
+    const targetAmountX = Math.sin(directionAsRadian) * hypotenuse; // SOH cah toa
+    const targetAmountY = Math.cos(directionAsRadian) * hypotenuse; // soh CAH toa
+
+    this.droneTargetX = this.droneX + targetAmountX;
+    this.droneTargetY = this.droneY - targetAmountY; // minus because the y is reversed in JS top to bottom
+  }
+
   simulateCommand(command, args) {
     if (command === 'start') {
       this.powered = !this.powered;
@@ -103,15 +117,19 @@ class Simulator {
           break;
         }
         case 'forward': {
+          this.updateDroneTargetPosition('forward', parseInt(args[0]));
           break;
         }
         case 'back': {
+          this.updateDroneTargetPosition('back', parseInt(args[0]));
           break;
         }
         case 'left': {
+          this.updateDroneTargetPosition('left', parseInt(args[0]));
           break;
         }
         case 'right': {
+          this.updateDroneTargetPosition('right', parseInt(args[0]));
           break;
         }
         case 'up': {
