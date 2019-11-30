@@ -79,57 +79,59 @@ class Simulator {
   }
 
   simulateCommand(command, args) {
-    console.warn('### simulateCommand', command, args);
-    switch (command) {
-      case 'start': {
-        this.powered = !this.powered;
-        this.renderDrone();
-        break;
+    if (command === 'start') {
+      this.powered = !this.powered;
+      this.renderDrone();
+    }
+
+    if (this.powered) {
+      console.warn('### simulateCommand', command, args);
+      switch (command) {
+        case 'takeoff': {
+          break;
+        }
+        case 'land': {
+          break;
+        }
+        case 'emergency': {
+          break;
+        }
+        case 'streamon': {
+          break;
+        }
+        case 'streamoff': {
+          break;
+        }
+        case 'forward': {
+          break;
+        }
+        case 'back': {
+          break;
+        }
+        case 'left': {
+          break;
+        }
+        case 'right': {
+          break;
+        }
+        case 'up': {
+          break;
+        }
+        case 'down': {
+          break;
+        }
+        case 'CCW': {
+          break;
+        }
+        case 'CW': {
+          break;
+        }
+        case 'flip': {
+          break;
+        }
+        default:
+          console.warn(`Command can't be simulated`, command);
       }
-      case 'takeoff': {
-        break;
-      }
-      case 'land': {
-        break;
-      }
-      case 'emergency': {
-        break;
-      }
-      case 'streamon': {
-        break;
-      }
-      case 'streamoff': {
-        break;
-      }
-      case 'forward': {
-        break;
-      }
-      case 'back': {
-        break;
-      }
-      case 'left': {
-        break;
-      }
-      case 'right': {
-        break;
-      }
-      case 'up': {
-        break;
-      }
-      case 'down': {
-        break;
-      }
-      case 'CCW': {
-        break;
-      }
-      case 'CW': {
-        break;
-      }
-      case 'flip': {
-        break;
-      }
-      default:
-        console.warn(`Command can't be simulated`, command);
     }
   }
 }
