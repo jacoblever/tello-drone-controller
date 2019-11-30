@@ -5,10 +5,11 @@ const droneSize = {
   length: 93 / droneScale,
   height: 41 / droneScale,
 };
-const droneSpeed = 10;
+const minSpeed = 10;
+const maxSpeed = 100;
 const droneRotationSpeed = 10;
 const droneElevationSpeed = 10;
-const maxElevation = 1000;
+const maxElevation = 3000;
 
 class Simulator {
   constructor(canvasId) {
@@ -17,6 +18,7 @@ class Simulator {
     this.droneY = this.simulatorContainerElement.getAttribute('height') / 2; //center
     this.droneTargetX = this.droneX;
     this.droneTargetY = this.droneY;
+    this.droneSpeed = 10;
     this.rotationDirection = 'clockwise';
     this.droneDirection = 0;
     this.droneTargetDirection = this.droneDirection;
@@ -160,12 +162,21 @@ class Simulator {
     }
   }
 
+  updateDroneSpeed(targetSpeed) {
+    this.droneSpeed = targetSpeed;
+    if (this.droneSpeed > maxSpeed) {
+      this.droneSpeed = maxSpeed;
+    } else if (this.droneSpeed < minSpeed) {
+      this.droneSpeed = minSpeed;
+    }
+  }
+
   moveDrone() {
     if (this.droneX !== this.droneTargetX || this.droneY !== this.droneTargetY) {
       const adjacent = this.droneTargetX - this.droneX; // soh CAH toa
       const opposite = this.droneTargetY - this.droneY; // SOH cah toa
       const hypotenuse = Math.sqrt(Math.pow(adjacent, 2) + Math.pow(opposite, 2));
-      const framesToTravel = hypotenuse / droneSpeed;
+      const framesToTravel = hypotenuse / (this.droneSpeed / 10); // /10 so that it can animate well
 
       if (framesToTravel < 1) { // arriving at target
         this.droneX = this.droneTargetX;
@@ -290,6 +301,9 @@ class Simulator {
         }
         case 'flip': {
           break;
+        }
+        case 'speed': {
+          this.updateDroneSpeed(parseInt(args[0]));
         }
         default:
           console.warn(`Command can't be simulated`, command);
