@@ -4,6 +4,7 @@ const droneSize = {
   length: 93,
   height: 41,
 };
+const droneSpeed = 10;
 
 class Simulator {
   constructor(canvasId) {
@@ -26,6 +27,12 @@ class Simulator {
     eventManager.subscribe("sendCommand", (commandString) => {
       const [command, ...args] = commandString.split(" ");
       this.simulateCommand(command, args);
+    });
+
+    eventManager.subscribe("onTick", (timeDelta) => {
+      if (this.powered) {
+        this.moveDrone();
+      }
     });
   }
 
@@ -88,8 +95,27 @@ class Simulator {
     const targetAmountX = Math.sin(directionAsRadian) * hypotenuse; // SOH cah toa
     const targetAmountY = Math.cos(directionAsRadian) * hypotenuse; // soh CAH toa
 
-    this.droneTargetX = this.droneX + targetAmountX;
-    this.droneTargetY = this.droneY - targetAmountY; // minus because the y is reversed in JS top to bottom
+    this.droneTargetX = Math.floor(this.droneX + targetAmountX);
+    this.droneTargetY = Math.floor(this.droneY - targetAmountY); // minus because the y is reversed in JS top to bottom
+  }
+
+  moveDrone() {
+    if (this.droneX !== this.droneTargetX || this.droneY !== this.droneTargetY) {
+      const adjacent = this.droneTargetX - this.droneX; // soh CAH toa
+      const opposite = this.droneTargetY - this.droneY; // SOH cah toa
+      const hypotenuse = Math.sqrt(Math.pow(adjacent, 2) + Math.pow(opposite, 2));
+      const framesToTravel = hypotenuse / droneSpeed;
+
+      if (framesToTravel < 1) { // arriving at target
+        this.droneX = this.droneTargetX;
+        this.droneY = this.droneTargetY;
+      } else { // Move the drone based on speed it can travel per frame
+        const xToTravel = Math.floor(adjacent / framesToTravel);
+        const yToTravel = Math.floor(opposite / framesToTravel);
+        this.droneX = this.droneX + xToTravel;
+        this.droneY = this.droneY + yToTravel;
+      }
+    }
   }
 
   simulateCommand(command, args) {
