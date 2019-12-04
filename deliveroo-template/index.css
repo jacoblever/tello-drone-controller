@@ -1,1 +1,23 @@
 /* styles go here */
+button {
+  padding: 8px;
+  margin: 2px;
+  border-radius: 5px;
+  background-color: lightblue;
+  color: mediumblue;
+  border-color: darkblue;
+}
+
+.directionControls {
+  margin-top: 20px;
+}
+
+.controlGroup {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.controlGroup:first-child {
+  margin-right: 20px;
+}

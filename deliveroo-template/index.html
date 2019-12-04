@@ -8,60 +8,38 @@
 
 <body>
   <button onclick="sendCommand('start')">Start</button>
-  -
   <button onclick="sendCommand('takeoff')">Take off</button>
   <button onclick="sendCommand('land')">Land</button>
-  -
   <button onclick="sendCommand('emergency')">Emergency Stop</button>
-  -
+
   <button onclick="sendCommand('streamon')">Record video (30 sec)</button>
   <button onclick="sendCommand('streamoff')">Stop video</button>
-  -
   <input onkeyup="sendTextCommand(this)" />
-  <br />
 
+  <br />
   <button onclick="sendCommand('flip f')">flip f</button>
   <button onclick="sendCommand('flip l')">flip l</button>
 
-  <br /><br /><br />
+  <div class="directionControls">
+    <div class="controlGroup">
+      <button onclick="sendCommand('forward 100')">Forward</button>
+      <div>
+        <button onclick="sendCommand('left 100');">Left</button>
+        <button onclick="sendCommand('right 100')">Right</button>
+      </div>
+      <button onclick="sendCommand('back 100')">Back</button>
+    </div>
 
-  <table>
-    <tr>
-      <td></td>
-      <td><button onclick="sendCommand('forward 100')">Forward</button></td>
-      <td></td>
-    </tr>
-    <tr>
-      <td><button onclick="sendCommand('left 100');">Left</button></td>
-      <td></td>
-      <td><button onclick="sendCommand('right 100')">Right</button></td>
-    </tr>
-    <tr>
-      <td></td>
-      <td><button onclick="sendCommand('back 100')">Back</button></td>
-      <td></td>
-    </tr>
-  </table>
+    <div class="controlGroup">
+      <button onclick="sendCommand('up 100')">Up</button>
+      <div>
+        <button onclick="sendCommand('ccw 90')">CCW</button>
+        <button onclick="sendCommand('cw 90')">CW</button>
+      </div>
+      <button onclick="sendCommand('down 100')">Down</button>
+    </div>
+  </div>
 
-  <br /><br />
-
-  <table>
-    <tr>
-      <td></td>
-      <td><button onclick="sendCommand('up 100')">Up</button></td>
-      <td></td>
-    </tr>
-    <tr>
-      <td><button onclick="sendCommand('CCW 90')">CCW</button></td>
-      <td></td>
-      <td><button onclick="sendCommand('CW 90')">CW</button></td>
-    </tr>
-    <tr>
-      <td></td>
-      <td><button onclick="sendCommand('down 100')">Down</button></td>
-      <td></td>
-    </tr>
-  </table>
   <hr />
   Status:<br />
   <div id="status">Once the Drone is connected click Start to put it into SDK mode</div>

@@ -375,11 +375,11 @@ class Simulator {
           this.updateDroneTargetElevation('down', parseInt(args[0]));
           break;
         }
-        case 'CCW': {
+        case 'ccw': {
           this.updateDroneTargetDirection('counterClockwise', parseInt(args[0]));
           break;
         }
-        case 'CW': {
+        case 'cw': {
           this.updateDroneTargetDirection('clockwise', parseInt(args[0]));
           break;
         }
