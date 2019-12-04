@@ -64,26 +64,13 @@ const eventManager = (function() {
   Some helper functions that make a request to the Tello Drone API
 */
 (function () {
-  serverUrl = "http://localhost:8080/";
-
-  function makeRequest(path, callback) {
-    var request = new XMLHttpRequest();
-    request.onreadystatechange = function() {
-      if(request.readyState === 4 && request.status === 200) {
-        callback(request.response);
-      }
-    }
-    request.open("GET", serverUrl + path)
-    request.send(null)
-  }
-
   function sendCommand(command, callback) {
     eventManager.publish("sendCommand", command);
-    makeRequest(command, callback)
+    callback()
   }
 
   function getStats(callback) {
-    makeRequest("stats", callback)
+    callback()
   }
 
   window.droneApi = {
@@ -180,7 +167,7 @@ class Simulator {
       this.backgroundCanvasContext.moveTo(x, 0);
       this.backgroundCanvasContext.lineTo(x, this.backgroundCanvas.height);
     }
-    
+
     for (var y = 0; y < this.backgroundCanvas.height; y += gridSize) {
       this.backgroundCanvasContext.moveTo(0, y);
       this.backgroundCanvasContext.lineTo(this.backgroundCanvas.width, y);
@@ -339,9 +326,7 @@ class Simulator {
         this.updateDroneTargetElevation('down', maxElevation);
       }
       this.renderDrone();
-    }
-
-    if (this.powered) {
+    } else if (this.powered) {
       console.warn('### simulateCommand', command, args);
       switch (command) {
         case 'takeoff': {
