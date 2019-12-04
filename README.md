@@ -9,16 +9,17 @@ brew install python3
 brew postinstall python3
 ```
 
+For camera recording capabilities install these:
 ```
 pip3 install ffmpeg-python
 brew install ffmpeg
 ```
 
-(where brew is Homebrew, https://brew.sh/, and pip3 might need to be pip, depending on what your python 3 pip is called).
+(where brew is Homebrew, [https://brew.sh/](https://brew.sh/), and pip3 might need to be pip, depending on what your python 3 pip is called).
 
 ## Running
 
 1. Turn the drone on
 2. Connect your laptop to the drone WiFi
 3. Run the python server with `python3 TelloServer.py`
-4. Open the frontend in your browser `open TelloFrontend.html`
+4. Open the frontend in your browser [`open ./complete/index.html`](https://github.com/jacoblever/tello-drone-controller/blob/master/complete/index.html) to check out the completed example of the drone controller UI with simulator
