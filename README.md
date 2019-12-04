@@ -3,6 +3,12 @@
 ## Installation
 I'm using python 3 (python 2 might work though) and Mac OS X. For the video streaming you'll need to install ffmpeg:
 
+To install python run
+```
+brew install python3
+brew postinstall python3
+```
+
 ```
 pip3 install ffmpeg-python
 brew install ffmpeg
