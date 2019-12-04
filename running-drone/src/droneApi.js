@@ -17,11 +17,11 @@
     request.send(null)
   }
 
-  function sendCommand(command, callback) {
+  function sendCommand(command, callback = () => {}) {
     makeRequest(command, callback)
   }
 
-  function getStats(callback) {
+  function getStats(callback = () => {}) {
     makeRequest("stats", callback)
   }
 
