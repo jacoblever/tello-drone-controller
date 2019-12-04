@@ -1,6 +1,5 @@
 function sendCommand(command) {
   setStatus("Sending...");
-  eventManager.publish("sendCommand", command);
   window.droneApi.sendCommand(command, function (response) {
     setStatus(response);
   })
