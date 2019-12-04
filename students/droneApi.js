@@ -1,3 +1,4 @@
+// The Drone API (we don't need to edit this)
 (function () {
   serverUrl = "http://localhost:8080/";
 
@@ -10,7 +11,7 @@
     }
     request.open("GET", serverUrl + path)
     request.send(null)
-  } 
+  }
 
   function sendCommand(command, callback) {
     makeRequest(command, callback)
