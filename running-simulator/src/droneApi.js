@@ -64,13 +64,13 @@ const eventManager = (function() {
   Some helper functions that make a request to the Tello Drone API
 */
 (function () {
-  function sendCommand(command, callback) {
+  function sendCommand(command, callback = () => {}) {
     eventManager.publish("sendCommand", command);
-    callback()
+    callback('ok')
   }
 
-  function getStats(callback) {
-    callback()
+  function getStats(callback = () => {}) {
+    callback('ok')
   }
 
   window.droneApi = {
@@ -396,6 +396,4 @@ class Simulator {
   }
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-  new Simulator('simulator');
-});
+new Simulator('simulator');

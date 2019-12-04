@@ -1,13 +1,13 @@
+function setStatus(text) {
+  statusDiv = document.getElementById("status");
+  statusDiv.innerHTML = text;
+}
+
 function sendCommand(command) {
   setStatus("Sending...");
   window.droneApi.sendCommand(command, function (response) {
     setStatus(response);
   })
-}
-
-function setStatus(text) {
-  statusDiv = document.getElementById("status");
-  statusDiv.innerHTML = text;
 }
 
 function updateStats() {
