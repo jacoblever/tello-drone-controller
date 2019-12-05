@@ -21,3 +21,9 @@ button {
 .controlGroup:first-child {
   margin-right: 20px;
 }
+
+#stop {
+  background-color: red;
+  color: white;
+  border-color: darkred;
+}
