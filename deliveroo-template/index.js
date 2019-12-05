@@ -1,26 +1,40 @@
-function setStatus(text) {
-  statusDiv = document.getElementById("status");
-  statusDiv.innerHTML = text;
-}
+function buttonClicked(command) {
+  // This looks for an element on the page with the id of "response".
+  // It will find the <div> we created above.
+  responseBox = document.getElementById("response");
 
-function sendCommand(command) {
-  setStatus("Sending...");
-  window.droneApi.sendCommand(command, function (response) {
-    setStatus(response);
-  })
-}
+  // When we click a button we first set the content of the response box to "Loading..."
+  // so we can see that we are waiting for the drone to respond.
+  responseBox.innerHTML = "Loading...";
 
-function updateStats() {
-  window.droneApi.getStats(function (stats) {
-    statsDiv = document.getElementById("stats");
-    statsDiv.innerHTML = stats;
-    setTimeout(updateStats, 100);
+  window.droneApi.sendCommand(command, function(droneResponse) {
+
+    // When the drone eventually responds this function will get called.
+    // The response tells us what the drone said, so we set that
+    responseBox.innerHTML = droneResponse;
   });
 }
 
+function updateStats() {
+  window.droneApi.getStats(function(stats) {
+    statsBox = document.getElementById("stats");
+    statsBox.innerHTML = stats;
+ 
+    // This will wait 200 milliseconds and then recursively call 
+    // updateStats again
+    setTimeout(updateStats, 200);
+  });
+}
+
+// Actually call the function
+updateStats();
+
+
+
+/* NOT FOR STUDENTS BELOW HERE */
 function sendTextCommand(input) {
   if (event.keyCode == 13) { // enter key
-    sendCommand(input.value);
+    buttonClicked(input.value);
     input.value = "";
   }
 }
@@ -28,17 +42,16 @@ function sendTextCommand(input) {
 function handleKeyDown(e) {
   e = e || window.event;
   if (e.keyCode == '38') { // up arrow
-    sendCommand('forward 100')
+    buttonClicked('forward 100')
   } else if (e.keyCode == '40') { // down arrow
-    sendCommand('back 100')
+    buttonClicked('back 100')
   } else if (e.keyCode == '37') { // left arrow
-    sendCommand('left 100')
+    buttonClicked('left 100')
   } else if (e.keyCode == '39') { // right arrow
-    sendCommand('right 100')
+    buttonClicked('right 100')
   }
 }
 
 (function () {
-  updateStats();
   document.onkeydown = handleKeyDown;
 })();

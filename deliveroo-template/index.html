@@ -7,46 +7,44 @@
 </head>
 
 <body>
-  <button onclick="sendCommand('start')">Start</button>
-  <button onclick="sendCommand('takeoff')">Take off</button>
-  <button onclick="sendCommand('land')">Land</button>
-  <button onclick="sendCommand('emergency')">Emergency Stop</button>
+  <button onclick="buttonClicked('start')">Start</button>
+  <button onclick="buttonClicked('takeoff')">Take off</button>
+  <button onclick="buttonClicked('land')">Land</button>
+  <button onclick="buttonClicked('emergency')">Emergency Stop</button>
 
-  <button onclick="sendCommand('streamon')">Record video (30 sec)</button>
-  <button onclick="sendCommand('streamoff')">Stop video</button>
+  <button onclick="buttonClicked('streamon')">Record video (30 sec)</button>
+  <button onclick="buttonClicked('streamoff')">Stop video</button>
   <input onkeyup="sendTextCommand(this)" />
 
   <br />
-  <button onclick="sendCommand('flip f')">flip f</button>
-  <button onclick="sendCommand('flip l')">flip l</button>
+  <button onclick="buttonClicked('flip f')">flip f</button>
+  <button onclick="buttonClicked('flip l')">flip l</button>
 
   <div class="directionControls">
     <div class="controlGroup">
-      <button onclick="sendCommand('forward 100')">Forward</button>
+      <button onclick="buttonClicked('forward 100')">Forward</button>
       <div>
-        <button onclick="sendCommand('left 100');">Left</button>
-        <button onclick="sendCommand('right 100')">Right</button>
+        <button onclick="buttonClicked('left 100');">Left</button>
+        <button onclick="buttonClicked('right 100')">Right</button>
       </div>
-      <button onclick="sendCommand('back 100')">Back</button>
+      <button onclick="buttonClicked('back 100')">Back</button>
     </div>
 
     <div class="controlGroup">
-      <button onclick="sendCommand('up 100')">Up</button>
+      <button onclick="buttonClicked('up 100')">Up</button>
       <div>
-        <button onclick="sendCommand('ccw 90')">CCW</button>
-        <button onclick="sendCommand('cw 90')">CW</button>
+        <button onclick="buttonClicked('ccw 90')">CCW</button>
+        <button onclick="buttonClicked('cw 90')">CW</button>
       </div>
-      <button onclick="sendCommand('down 100')">Down</button>
+      <button onclick="buttonClicked('down 100')">Down</button>
     </div>
   </div>
 
   <hr />
-  Status:<br />
-  <div id="status">Once the Drone is connected click Start to put it into SDK mode</div>
+  Drone Response: <div id="response"></div>
+  
   <hr />
-  Stats:<br />
-  <div id="stats"></div>
-  <hr />
+  Stats: <div id="stats"></div>
 
   <div id="simulator" width="400" height="400"></div>
   <script src="./src/droneApi.js" type="text/javascript"></script>
