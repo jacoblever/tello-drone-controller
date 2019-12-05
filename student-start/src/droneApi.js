@@ -66,11 +66,11 @@ const eventManager = (function() {
 (function () {
   function sendCommand(command, callback = () => {}) {
     eventManager.publish("sendCommand", command);
-    callback('ok')
+    setTimeout(() => callback('ok'), 700);
   }
 
-  function getStats(callback = () => {}) {
-    callback('ok')
+  function getStats(callback = () => { }) {
+    setTimeout(() => callback('{"name": 12}'), 50);
   }
 
   window.droneApi = {
