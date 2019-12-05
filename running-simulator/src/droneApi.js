@@ -70,7 +70,10 @@ const eventManager = (function() {
   }
 
   function getStats(callback = () => { }) {
-    setTimeout(() => callback('{"name": 12}'), 50);
+    setTimeout(() => callback(
+      '{"pitch": "0", "roll": "0", "yaw": "0", "vgx": "0", "vgy": "0", "vgz": "0", "templ": "71", "temph": "73", "tof": "10", "h": "0", "bat": "100", "baro": "-41.44", "time": "0", "agx": "4.00", "agy": "-7.00", "agz": "-997.00"}'),
+      50
+    );
   }
 
   window.droneApi = {
