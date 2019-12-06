@@ -352,6 +352,8 @@ class Simulator {
         }
         case 'emergency': {
           this.emergencyStop();
+          this.updateDroneTargetElevation('down', maxElevation);
+          this.powered = !this.powered;
           break;
         }
         case 'streamon': {
