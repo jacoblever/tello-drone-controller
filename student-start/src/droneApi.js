@@ -1,14 +1,3 @@
-// The Drone API (we don’t need to edit or move this file)
-
-
-
-
-
-
-
-
-
-
 /*
   Event Manager
   -------------
@@ -236,15 +225,21 @@ class Simulator {
 
       this.droneTargetX = Math.floor(this.droneX + targetAmountX);
       this.droneTargetY = Math.floor(this.droneY - targetAmountY); // minus because the y is reversed in JS top to bottom
+    } else {
+      alert('The drone is not flying yet. Please send a "takeoff" command before moving the drone.')
     }
   }
 
   updateDroneTargetDirection(rotationDirection, amount) {
-    this.rotationDirection = rotationDirection;
-    if (rotationDirection === 'clockwise') {
-      this.droneTargetDirection = this.droneDirection + amount;
-    } else if (rotationDirection === 'counterClockwise') {
-      this.droneTargetDirection = this.droneDirection - amount;
+    if (this.droneElevation > 0) { // don't rotate drone if it's on the floor
+      this.rotationDirection = rotationDirection;
+      if (rotationDirection === 'clockwise') {
+        this.droneTargetDirection = this.droneDirection + amount;
+      } else if (rotationDirection === 'counterClockwise') {
+        this.droneTargetDirection = this.droneDirection - amount;
+      }
+    } else {
+      alert('The drone is not flying yet. Please send a "takeoff" command before rotating the drone.')
     }
   }
 
@@ -404,8 +399,10 @@ class Simulator {
           this.updateDroneSpeed(parseInt(args[0]));
         }
         default:
-          console.warn(`Command can't be simulated`, command);
+          alert(`The command "${command}" is not supported by the simulator yet or is the incorrect command.`);
       }
+    } else {
+      alert('Please power on the drone by sending a "start" command');
     }
   }
 }
