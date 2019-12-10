@@ -6,24 +6,28 @@ button {
   background-color: lightblue;
   color: mediumblue;
   border-color: darkblue;
-}
-
-.directionControls {
-  margin-top: 20px;
-}
-
-.controlGroup {
-  display: inline-flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.controlGroup:first-child {
-  margin-right: 20px;
+  font-size: 20px;
 }
 
 #stop {
   background-color: red;
   color: white;
   border-color: darkred;
+}
+
+.directionControls {
+  display: flex;
+  justify-content: space-between;
+  margin: 20px 100px 0
+}
+
+.controlGroup {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.topButtons {
+  display: flex;
+  justify-content: space-between;
 }
