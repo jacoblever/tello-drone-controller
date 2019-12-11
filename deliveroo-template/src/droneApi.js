@@ -395,6 +395,41 @@ class Simulator {
           break;
         }
         case 'flip': {
+          if (args[0] === 'f') {
+            this.updateDroneTargetPosition('forward', 10);
+            this.updateDroneTargetElevation('up', parseInt(100));
+            setTimeout(()=>{
+              this.updateDroneTargetPosition('back', 10);
+              this.updateDroneTargetElevation('down', parseInt(100));
+            }, 175)
+          }
+
+          if (args[0] === 'b') {
+            this.updateDroneTargetPosition('back', 10);
+            this.updateDroneTargetElevation('up', parseInt(100));
+            setTimeout(()=>{
+              this.updateDroneTargetPosition('forward', 10);
+              this.updateDroneTargetElevation('down', parseInt(100));
+            }, 175)
+          }
+
+          if (args[0] === 'l') {
+            this.updateDroneTargetPosition('left', 10);
+            this.updateDroneTargetElevation('up', parseInt(100));
+            setTimeout(()=>{
+              this.updateDroneTargetPosition('right', 10);
+              this.updateDroneTargetElevation('down', parseInt(100));
+            }, 175)
+          }
+
+          if (args[0] === 'r') {
+            this.updateDroneTargetPosition('right', 10);
+            this.updateDroneTargetElevation('up', parseInt(100));
+            setTimeout(()=>{
+              this.updateDroneTargetPosition('left', 10);
+              this.updateDroneTargetElevation('down', parseInt(100));
+            }, 175)
+          }
           break;
         }
         case 'speed': {
