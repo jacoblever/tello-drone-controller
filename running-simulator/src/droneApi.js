@@ -65,8 +65,13 @@ const eventManager = (function() {
 */
 (function () {
   function sendCommand(command, callback = () => {}) {
-    eventManager.publish("sendCommand", command);
-    setTimeout(() => callback('ok'), 700);
+    eventManager.publish(
+      "sendCommand",
+      {
+        command: command,
+        callback: callback,
+      }
+    );
   }
 
   function getStats(callback = () => { }) {
@@ -114,6 +119,7 @@ class Simulator {
     this.droneElevation = 0;
     this.droneTargetElevation = this.droneElevation;
     this.powered = false;
+    this.inFlight = false;
 
     this.init();
   }
@@ -124,9 +130,9 @@ class Simulator {
     this.renderBackground();
     this.renderDrone();
 
-    eventManager.subscribe("sendCommand", (commandString) => {
-      const [command, ...args] = commandString.split(" ");
-      this.simulateCommand(command, args);
+    eventManager.subscribe("sendCommand", (params) => {
+      const [command, ...args] = params.command.split(" ");
+      this.simulateCommand(command, args, params.callback);
     });
 
     eventManager.subscribe("onTick", (timeDelta) => {
@@ -215,8 +221,8 @@ class Simulator {
     this.droneCanvasContext.scale(newScale, newScale);
   }
 
-  updateDroneTargetPosition(direction, hypotenuse) {
-    if (this.droneElevation > 0) { // don't move drone if it's on the floor
+  updateDroneTargetPosition(direction, hypotenuse, done) {
+    if (this.droneElevation > 0 && this.inFlight) { // don't move drone if it's on the floor
       const directions = ['forward', 'right', 'back', 'left'];
       const directionToMove = this.droneDirection + directions.indexOf(direction) * 90;
       const directionAsRadian = directionToMove * Math.PI/180; // Radians because JS uses radians not degrees
@@ -225,45 +231,53 @@ class Simulator {
 
       this.droneTargetX = Math.floor(this.droneX + targetAmountX);
       this.droneTargetY = Math.floor(this.droneY - targetAmountY); // minus because the y is reversed in JS top to bottom
+      done('ok');
     } else {
-      alert('The drone is not flying yet. Please send a "takeoff" command before moving the drone.')
+      done('error Motor stop');
     }
   }
 
-  updateDroneTargetDirection(rotationDirection, amount) {
-    if (this.droneElevation > 0) { // don't rotate drone if it's on the floor
+  updateDroneTargetDirection(rotationDirection, amount, done) {
+    if (this.droneElevation > 0 && this.inFlight) { // don't rotate drone if it's on the floor
       this.rotationDirection = rotationDirection;
       if (rotationDirection === 'clockwise') {
         this.droneTargetDirection = this.droneDirection + amount;
       } else if (rotationDirection === 'counterClockwise') {
         this.droneTargetDirection = this.droneDirection - amount;
       }
+      done('ok');
     } else {
-      alert('The drone is not flying yet. Please send a "takeoff" command before rotating the drone.')
+      done('error Motor stop');
     }
   }
 
-  updateDroneTargetElevation(elevationDirection, amount) {
-    if (elevationDirection === 'up') {
-      this.droneTargetElevation = this.droneElevation + amount;
-      if (this.droneTargetElevation > maxElevation) {
-        this.droneTargetElevation = maxElevation;
+  updateDroneTargetElevation(elevationDirection, amount, done) {
+    if (this.inFlight) {
+      if (elevationDirection === 'up') {
+        this.droneTargetElevation = this.droneElevation + amount;
+        if (this.droneTargetElevation > maxElevation) {
+          this.droneTargetElevation = maxElevation;
+        }
+      } else if (elevationDirection === 'down') {
+        this.droneTargetElevation = this.droneElevation - amount;
+        if (this.droneTargetElevation < 0) {
+          this.droneTargetElevation = 0;
+        }
       }
-    } else if (elevationDirection === 'down') {
-      this.droneTargetElevation = this.droneElevation - amount;
-      if (this.droneTargetElevation < 0) {
-        this.droneTargetElevation = 0;
-      }
+      done('ok');
+    } else {
+      done('error Motor stop');
     }
   }
 
-  updateDroneSpeed(targetSpeed) {
+  updateDroneSpeed(targetSpeed, done) {
     this.droneSpeed = targetSpeed;
     if (this.droneSpeed > maxSpeed) {
       this.droneSpeed = maxSpeed;
     } else if (this.droneSpeed < minSpeed) {
       this.droneSpeed = minSpeed;
     }
+    done('ok');
   }
 
   moveDrone() {
@@ -328,118 +342,129 @@ class Simulator {
     this.droneTargetElevation = this.droneElevation;
   }
 
-  simulateCommand(command, args) {
+  simulateCommand(command, args, callback) {
+    let done = (message) => {
+      var timeDelay = Math.floor(Math.random() * 600) + 600;
+      setTimeout(() => { callback(message) }, timeDelay);
+    };
     if (command === 'start') {
-      this.powered = !this.powered;
-      if (this.droneElevation > 0) {
-        this.updateDroneTargetElevation('down', maxElevation);
-      }
+      this.powered = true;
       this.renderDrone();
+      done("ok");
     } else if (this.powered) {
       console.warn('### simulateCommand', command, args);
       switch (command) {
         case 'takeoff': {
-          if (this.droneElevation === 0) {
-            this.updateDroneTargetElevation('up', 500);
-          }
+          this.inFlight = true;
+          this.updateDroneTargetElevation('up', 500, done);
           break;
         }
         case 'land': {
-          if (this.droneElevation > 0) {
-            this.updateDroneTargetElevation('down', maxElevation);
-          }
+          this.updateDroneTargetElevation('down', maxElevation, done);
+          this.inFlight = false;
           break;
         }
         case 'emergency': {
           this.emergencyStop();
-          this.updateDroneTargetElevation('down', maxElevation);
-          this.powered = !this.powered;
+          // The drone does not respond to this at all!
+          this.updateDroneTargetElevation('down', maxElevation, () => { });
+          this.powered = false;
+          this.inFlight = false;
           break;
         }
         case 'streamon': {
+          done("ok");
           break;
         }
         case 'streamoff': {
+          done("ok");
           break;
         }
         case 'forward': {
-          this.updateDroneTargetPosition('forward', parseInt(args[0]));
+          this.updateDroneTargetPosition('forward', parseInt(args[0]), done);
           break;
         }
         case 'back': {
-          this.updateDroneTargetPosition('back', parseInt(args[0]));
+          this.updateDroneTargetPosition('back', parseInt(args[0]), done);
           break;
         }
         case 'left': {
-          this.updateDroneTargetPosition('left', parseInt(args[0]));
+          this.updateDroneTargetPosition('left', parseInt(args[0]), done);
           break;
         }
         case 'right': {
-          this.updateDroneTargetPosition('right', parseInt(args[0]));
+          this.updateDroneTargetPosition('right', parseInt(args[0]), done);
           break;
         }
         case 'up': {
-          this.updateDroneTargetElevation('up', parseInt(args[0]));
+          this.updateDroneTargetElevation('up', parseInt(args[0]), done);
+          done("ok");
           break;
         }
         case 'down': {
-          this.updateDroneTargetElevation('down', parseInt(args[0]));
+          this.updateDroneTargetElevation('down', parseInt(args[0]), done);
+          done("ok");
           break;
         }
         case 'ccw': {
-          this.updateDroneTargetDirection('counterClockwise', parseInt(args[0]));
+          this.updateDroneTargetDirection('counterClockwise', parseInt(args[0]), done);
           break;
         }
         case 'cw': {
-          this.updateDroneTargetDirection('clockwise', parseInt(args[0]));
+          this.updateDroneTargetDirection('clockwise', parseInt(args[0]), done);
           break;
         }
         case 'flip': {
+          if (!this.inFlight) {
+            done('take off first');
+            break;
+          }
           if (args[0] === 'f') {
-            this.updateDroneTargetPosition('forward', 10);
-            this.updateDroneTargetElevation('up', parseInt(100));
+            this.updateDroneTargetPosition('forward', 10, () => { });
+            this.updateDroneTargetElevation('up', parseInt(100), () => { });
             setTimeout(()=>{
-              this.updateDroneTargetPosition('back', 10);
-              this.updateDroneTargetElevation('down', parseInt(100));
+              this.updateDroneTargetPosition('back', 10, () => { });
+              this.updateDroneTargetElevation('down', parseInt(100), () => { });
             }, 175)
           }
 
           if (args[0] === 'b') {
-            this.updateDroneTargetPosition('back', 10);
-            this.updateDroneTargetElevation('up', parseInt(100));
+            this.updateDroneTargetPosition('back', 10, () => { });
+            this.updateDroneTargetElevation('up', parseInt(100), () => { });
             setTimeout(()=>{
-              this.updateDroneTargetPosition('forward', 10);
-              this.updateDroneTargetElevation('down', parseInt(100));
+              this.updateDroneTargetPosition('forward', 10, () => { });
+              this.updateDroneTargetElevation('down', parseInt(100), () => { });
             }, 175)
           }
 
           if (args[0] === 'l') {
-            this.updateDroneTargetPosition('left', 10);
-            this.updateDroneTargetElevation('up', parseInt(100));
+            this.updateDroneTargetPosition('left', 10, () => { });
+            this.updateDroneTargetElevation('up', parseInt(100), () => { });
             setTimeout(()=>{
-              this.updateDroneTargetPosition('right', 10);
-              this.updateDroneTargetElevation('down', parseInt(100));
+              this.updateDroneTargetPosition('right', 10, () => { });
+              this.updateDroneTargetElevation('down', parseInt(100), () => { });
             }, 175)
           }
 
           if (args[0] === 'r') {
-            this.updateDroneTargetPosition('right', 10);
-            this.updateDroneTargetElevation('up', parseInt(100));
+            this.updateDroneTargetPosition('right', 10, () => { });
+            this.updateDroneTargetElevation('up', parseInt(100), () => { });
             setTimeout(()=>{
-              this.updateDroneTargetPosition('left', 10);
-              this.updateDroneTargetElevation('down', parseInt(100));
+              this.updateDroneTargetPosition('left', 10, () => { });
+              this.updateDroneTargetElevation('down', parseInt(100), () => { });
             }, 175)
           }
+          done('ok');
           break;
         }
         case 'speed': {
-          this.updateDroneSpeed(parseInt(args[0]));
+          this.updateDroneSpeed(parseInt(args[0]), done);
         }
         default:
-          alert(`The command "${command}" is not supported by the simulator yet or is the incorrect command.`);
+          done(`unknown command: ${command}`);
       }
     } else {
-      alert('Please power on the drone by sending a "start" command');
+      done('error');
     }
   }
 }
