@@ -22,7 +22,10 @@
   }
 
   function getStats(callback = () => {}) {
-    makeRequest("stats", callback)
+    makeRequest("stats", (response) => {
+      obj = JSON.parse(response);
+      callback(obj);
+    });
   }
 
   window.droneApi = {

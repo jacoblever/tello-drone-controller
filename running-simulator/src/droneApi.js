@@ -76,9 +76,44 @@ const eventManager = (function() {
 
   function getStats(callback = () => { }) {
     setTimeout(() => callback(
-      '{"pitch": "0", "roll": "0", "yaw": "0", "vgx": "0", "vgy": "0", "vgz": "0", "templ": "71", "temph": "73", "tof": "10", "h": "0", "bat": "100", "baro": "-41.44", "time": "0", "agx": "4.00", "agy": "-7.00", "agz": "-997.00"}'),
+      {
+        pitch: randomInt(-90, 90),
+        roll: randomInt(-180, 180),
+        yaw: randomInt(-180, 180),
+        vgx: randomInt(-40, 40),
+        vgy: "0",
+        vgz: "0",
+        templ: randomInt(74, 86),
+        temph: randomInt(77, 90),
+        tof: randomInt(0, 400),
+        h: randomMultipleOfTen(-80, 80),
+        bat: randomInt(0, 100),
+        baro: randomFloat(90, 150),
+        time: "0",
+        agx: randomFloat(-1000, 1000),
+        agy: randomFloat(-1000, 1000),
+        agz: randomFloat(-1000, 1000),
+      }),
       50
     );
+  }
+
+  function randomInt(min, max) {
+    return generateInt(min, max).toString();
+  }
+
+  function randomMultipleOfTen(min, max) {
+    var number = generateInt(min / 10, max / 10);
+    return (number * 10).toString();
+  }
+
+  function randomFloat(min, max) {
+    var number = generateInt(min *100, max *100);
+    return (number / 100).toFixed(2);
+  }
+
+  function generateInt(min, max) {
+    return Math.floor(Math.random() * (max - min)) + min;
   }
 
   window.droneApi = {
