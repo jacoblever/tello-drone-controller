@@ -401,7 +401,7 @@ class Simulator {
         }
         case 'emergency': {
           this.emergencyStop();
-          // The drone does not respond to this at all!
+          // The drone does not respond to this at all, so there's no call to 'done'!
           this.updateDroneTargetElevation('down', maxElevation, () => { });
           this.powered = false;
           this.inFlight = false;
@@ -433,12 +433,10 @@ class Simulator {
         }
         case 'up': {
           this.updateDroneTargetElevation('up', parseInt(args[0]), done);
-          done("ok");
           break;
         }
         case 'down': {
           this.updateDroneTargetElevation('down', parseInt(args[0]), done);
-          done("ok");
           break;
         }
         case 'ccw': {
@@ -494,6 +492,7 @@ class Simulator {
         }
         case 'speed': {
           this.updateDroneSpeed(parseInt(args[0]), done);
+          break;
         }
         default:
           done(`unknown command: ${command}`);
